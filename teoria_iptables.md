@@ -22,8 +22,6 @@
     
     ![](/home/marc/.var/app/com.github.marktext.marktext/config/marktext/images/2020-04-21-18-21-14-image.png)
 
-
-
 ## Input
 
 El tràfic *input* és tot aquell que està **destinat** al *host-aula*. NO que passi, sinó destinat al host.
@@ -72,24 +70,42 @@ En el cas de tcp es poden establir regles verificant que el tràfic sigui **esta
 
 Per exemple, no es permet tràfic **input** del protocol http al *host-aula* però sí navegar per internet. Això significa que es permet tràfic de sortida **output** cap a servidors d'internet però només es permet tràfic d'entrada **input** de tipus http si **són respostes** al tràfic generat **established/related**. Si són peticions de tràfic nou entrant **NO** es permet.
 
+### NAT
 
+El que fa la **NAT** (*Network Address Translation*) és enmascarar les adreces IP **privades** de les xarxes locals per sortir a l'exterior usant l'adreça **pública del router** (o el host si el transformem en un router).
 
+Per a transformar un host en router simplement hem de posar el bit del kernel de *forwarding* a 1.
 
+Per exemple, els hosts *A1* i *A2* volen connectar-se a Google però no poden (tenen les regles output capades), fem que passi pel router (*host-aula*):
 
+```bash
+Ip:port origen ---- > ip:port destí 
+A1:dinàmic7 ---- > google:80
+A1:dinàmic9 ---- > google:80
+A2:dinàmic3 ---- > google:80
+                        // Aplicant NAT //
+ip:port origen ---- > ip:port destí
+host-aula:dinàmic1 ---- > google:80
+host-aula:dinàmic2 ---- > google:80
+host-aula:dinàmic3 ---- > google:80
+```
 
+En aquest cas, el servidor de Google respondrà **al router** i aquest (amb la taula de traslacions NAT on té qui ha demanat què) li reenvia (*forwarding*) a qui hagi fet la petició inicial. El servidor de Google desconeix l'existència d'aquests hosts privats.
 
+```bash
+Ip:port origen ---- > ip:port destí 
+google:80 ---- > host-aula:dinàmic1
+google:80 ---- > host-aula:dinàmic2
+google:80 ---- > host-aula:dinàmic3
+                        // Aplicant NAT //
+ip:port origen ---- > ip:port destí
+google:80 ---- > A1:dinàmic7
+google:80 ---- > A1:dinàmic9
+google:80 ---- > A2:dinàmic3
+```
 
+Quan el router detecta que no és ell el destí, sino Google, aplica el **POSTROUTING SNAT** modificant l'ip:port origen posant-hi el seu i anotant-ho a la **taula NAT**. Quan el servidor de Google respon el router aplica el **PREROUTING DNAT** abans que les regles input, i ell sol ja torna a canviar les adreces:ports corresponents, aplicant les regles **forward**.
 
-
-
-
-
-
-
-
-
-
-
-
+Resumint, només hi ha un tràfic de sortida i un altre de tornada, el del host al servidor de google ( el router deixa passar sense aplicar les regles *input* /*output*  com si anés dirigit a ell)
 
 
