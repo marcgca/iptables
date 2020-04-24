@@ -6,7 +6,7 @@
 
 * [Exercici 2: Output](./ip-02-output.sh)
 
-* [Exercici 3: Established](./ip-03-established)
+* [Exercici 3: Established](./ip-03-established.sh)
 
 * [Exercici 4: ICMP](./ip-04-icmp.sh)
 
@@ -21,5 +21,3 @@
 * [Exercici 9: DMZ2](./ip-02-dmz2.sh)
 
 * [Exercici 10: Drop](./ip-10-drop.sh)
-
-
