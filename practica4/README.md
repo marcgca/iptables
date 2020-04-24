@@ -18,6 +18,6 @@
 
 * [Exercici 8: DMZ](./ip-08-dmz.sh)
 
-* [Exercici 9: DMZ2](./ip-02-dmz2.sh)
+* [Exercici 9: DMZ2](./ip-09-dmz2.sh)
 
 * [Exercici 10: Drop](./ip-10-drop.sh)
